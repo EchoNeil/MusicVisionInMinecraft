@@ -1,5 +1,7 @@
 # MusicVisionInMinecraft
-一个用c++编写的在minecraft中创建数据包实现音乐可视化的工具
+一个用c++编写的在minecraft中创建数据包实现音乐可视化的工具  
+**效果**:[https://www.bilibili.com/video/BV1MSZTBLEgL/](https://www.bilibili.com/video/BV1MSZTBLEgL/)
+
 
 ## 如何使用
 - **版本**：支持1.20+
