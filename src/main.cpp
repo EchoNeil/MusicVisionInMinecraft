@@ -21,30 +21,30 @@ namespace fs = std::filesystem;
 const double M_PI = std::acos(-1.0);
 
 
-// ÅäÖÃÀà£¬Ìá¹©×ÔÓÉĞŞ¸Ä²ÎÊı
+// é…ç½®ç±»ï¼Œæä¾›è‡ªç”±ä¿®æ”¹å‚æ•°
 struct VisualizationConfig {
-    // ÆğÊ¼×ø±ê£¨Æ½Ãæ×óÏÂ½Ç£©
+    // èµ·å§‹åæ ‡ï¼ˆå¹³é¢å·¦ä¸‹è§’ï¼‰
     int baseX = 0;
     int baseY = 0;
     int baseZ = 0;
 
-    // Æ½Ãæ³ß´ç£¨Ä¬ÈÏ10x10£©
-    int width = 10;   // Ë®Æ½·½Ïò£¨¶ÔÓ¦Æµ¶Î£©
-    int height = 10;  // ÊúÖ±·½Ïò£¨¶ÔÓ¦Ïì¶È£©
+    // å¹³é¢å°ºå¯¸ï¼ˆé»˜è®¤10x10ï¼‰
+    int width = 10;   // æ°´å¹³æ–¹å‘ï¼ˆå¯¹åº”é¢‘æ®µï¼‰
+    int height = 10;  // ç«–ç›´æ–¹å‘ï¼ˆå¯¹åº”å“åº¦ï¼‰
 
-    // ·½¿éÀàĞÍ£¨Ê¹ÓÃMinecraftÃüÃû¿Õ¼äID£©
+    // æ–¹å—ç±»å‹ï¼ˆä½¿ç”¨Minecraftå‘½åç©ºé—´IDï¼‰
     std::string blockType = "minecraft:ochre_froglight";
     std::string airType = "minecraft:air";
 
-    // ²ÉÑùÂÊ£¨×Ô¶¯´ÓMP3»ñÈ¡£¬µ«¿É¸²¸Ç£©
-    int targetSampleRate = 48000;  // Ä¬ÈÏ£¬ÈôMP3²»Í¬»áÖØ²ÉÑù£¨¼ò»¯£º²»ÖØ²ÉÑù£¬Ö±½ÓÊ¹ÓÃÔ­²ÉÑùÂÊ£©
+    // é‡‡æ ·ç‡ï¼ˆè‡ªåŠ¨ä»MP3è·å–ï¼Œä½†å¯è¦†ç›–ï¼‰
+    int targetSampleRate = 48000;  // é»˜è®¤ï¼Œè‹¥MP3ä¸åŒä¼šé‡é‡‡æ ·ï¼ˆç®€åŒ–ï¼šä¸é‡é‡‡æ ·ï¼Œç›´æ¥ä½¿ç”¨åŸé‡‡æ ·ç‡ï¼‰
 
-    // Ö¡³¤£º50ms¶ÔÓ¦µÄÑù±¾Êı
+    // å¸§é•¿ï¼š50mså¯¹åº”çš„æ ·æœ¬æ•°
     int frameSamples(int sampleRate) const {
         return static_cast<int>(sampleRate * 0.05); // 50ms
     }
 
-    // Æµ¶Î»®·Ö£¨´ÓµÍµ½¸ß¸÷Æµ¶ÎµÄÆğÊ¼ÆµÂÊ£¬10¸öÖù×Ó11¸ö·Ö¸ô µ¥Î»Hz
+    // é¢‘æ®µåˆ’åˆ†ï¼ˆä»ä½åˆ°é«˜å„é¢‘æ®µçš„èµ·å§‹é¢‘ç‡ï¼Œ10ä¸ªæŸ±å­11ä¸ªåˆ†éš” å•ä½Hz
 
     std::vector<double> freqBands(int sampleRate) const 
     {
@@ -73,71 +73,71 @@ struct VisualizationConfig {
 };
 
 // ----------------------------------------------
-// ÒôÆµ½âÂëÆ÷£¬Ê¹ÓÃminimp3
+// éŸ³é¢‘è§£ç å™¨ï¼Œä½¿ç”¨minimp3
 // ----------------------------------------------
 class AudioDecoder {
 public:
     bool load(const std::string& filename, std::vector<float>& pcm, int& sampleRate) 
-    //filename - ÎÄ¼şÂ·¾¶  pcm - ´æ´¢½âÂëºóµÄÒôÆµÊı¾İ  samplerate - ²ÉÑùÂÊ
+    //filename - æ–‡ä»¶è·¯å¾„  pcm - å­˜å‚¨è§£ç åçš„éŸ³é¢‘æ•°æ®  samplerate - é‡‡æ ·ç‡
     {
         std::cout << "start decoder" << std::endl;
         mp3dec_t mp3d;
         mp3dec_init(&mp3d);
 
-        // ´ò¿ªÎÄ¼ş
+        // æ‰“å¼€æ–‡ä»¶
         FILE* file = fopen(filename.c_str(), "rb");
         if (!file) {
-            std::cerr << "ÎŞ·¨´ò¿ªÎÄ¼ş: " << filename << std::endl;
+            std::cerr << "æ— æ³•æ‰“å¼€æ–‡ä»¶: " << filename << std::endl;
             return false;
         }
 
         mp3dec_file_info_t info = { 0 };
         int result = mp3dec_load(&mp3d, filename.c_str(), &info, NULL, NULL);
         if (result != 0) {
-            std::cerr << "½âÂëÊ§°Ü£¬´íÎóÂë: " << result << std::endl;
+            std::cerr << "è§£ç å¤±è´¥ï¼Œé”™è¯¯ç : " << result << std::endl;
             fclose(file);
             return false;
         }
         if (info.buffer == nullptr) {
-            // ×¢Òâ£ºÕâÀï info.buffer Ó¦¸ÃÓÉÍâ²¿ free£¬Å×³öÒì³£Ç°×îºÃÒ²ÇåÀíÒ»ÏÂ
-            fclose(file); // ±ğÍüÁË¹Ø±ÕÎÄ¼ş
+            // æ³¨æ„ï¼šè¿™é‡Œ info.buffer åº”è¯¥ç”±å¤–éƒ¨ freeï¼ŒæŠ›å‡ºå¼‚å¸¸å‰æœ€å¥½ä¹Ÿæ¸…ç†ä¸€ä¸‹
+            fclose(file); // åˆ«å¿˜äº†å…³é—­æ–‡ä»¶
             throw std::runtime_error("info.buffer is nullptr");
         }
 
         sampleRate = info.hz;
 
-        // --- ĞŞ¸´¿ªÊ¼ ---
-        // info.samples ÊÇ buffer ÖĞµÄ×ÜÔªËØ¸öÊı£¨ËùÓĞÉùµÀÖ®ºÍ£©
+        // --- ä¿®å¤å¼€å§‹ ---
+        // info.samples æ˜¯ buffer ä¸­çš„æ€»å…ƒç´ ä¸ªæ•°ï¼ˆæ‰€æœ‰å£°é“ä¹‹å’Œï¼‰
         if (info.channels > 1) {
-            // ¼ÆËãµ¥ÉùµÀµÄÑù±¾ÊıÁ¿£¨Ö¡Êı£©
+            // è®¡ç®—å•å£°é“çš„æ ·æœ¬æ•°é‡ï¼ˆå¸§æ•°ï¼‰
             int frames = info.samples / info.channels;
 
-            pcm.resize(frames);  //Èç¹ûÊÇÁ¢ÌåÉù£¬ĞèÒª½«Ë«ÉùµÀÊı¾İ²ğ·ÖÎªµ¥ÉùµÀÊı¾İ
+            pcm.resize(frames);  //å¦‚æœæ˜¯ç«‹ä½“å£°ï¼Œéœ€è¦å°†åŒå£°é“æ•°æ®æ‹†åˆ†ä¸ºå•å£°é“æ•°æ®
             for (int i = 0; i < frames; ++i) {
-                // Á¢ÌåÉùÊı¾İÊÇ½»´íµÄ£ºL, R, L, R...
-                // Ë÷Òı i ¶ÔÓ¦µÄÒ»¶ÔÑù±¾ÔÚ buffer ÖĞµÄÎ»ÖÃÊÇ 2*i ºÍ 2*i+1
+                // ç«‹ä½“å£°æ•°æ®æ˜¯äº¤é”™çš„ï¼šL, R, L, R...
+                // ç´¢å¼• i å¯¹åº”çš„ä¸€å¯¹æ ·æœ¬åœ¨ buffer ä¸­çš„ä½ç½®æ˜¯ 2*i å’Œ 2*i+1
                 float left = info.buffer[2 * i] / 32768.0f;
                 float right = info.buffer[2 * i + 1] / 32768.0f;
                 pcm[i] = (left + right) * 0.5f;
             }
         }
         else {
-            // µ¥ÉùµÀ£¬Ö±½Ó¸´ÖÆ
+            // å•å£°é“ï¼Œç›´æ¥å¤åˆ¶
             pcm.resize(info.samples);
             for (int i = 0; i < info.samples; ++i) {
                 pcm[i] = info.buffer[i] / 32768.0f;
             }
         }
-        // --- ĞŞ¸´½áÊø ---
+        // --- ä¿®å¤ç»“æŸ ---
 
-        free(info.buffer); // ÓÉminimp3·ÖÅäµÄÄÚ´æ
+        free(info.buffer); // ç”±minimp3åˆ†é…çš„å†…å­˜
         fclose(file);
         return true;
     }
 };
 
 // ----------------------------------------------
-// ÆµÂÊ·ÖÎöÆ÷£¬Ê¹ÓÃKissFFT
+// é¢‘ç‡åˆ†æå™¨ï¼Œä½¿ç”¨KissFFT
 // ----------------------------------------------
 class FrequencyAnalyzer {
 public:
@@ -146,18 +146,18 @@ public:
         bands_ = config_.freqBands(sampleRate_);
     }
 
-    // ¶ÔÒ»Ö¡PCMÊı¾İ¼ÆËã¸÷Æµ¶ÎÄÜÁ¿£¬·µ»Ø³¤¶ÈÎªwidthµÄ¸¡µãÊıÏòÁ¿
+    // å¯¹ä¸€å¸§PCMæ•°æ®è®¡ç®—å„é¢‘æ®µèƒ½é‡ï¼Œè¿”å›é•¿åº¦ä¸ºwidthçš„æµ®ç‚¹æ•°å‘é‡
     std::vector<double> computeFrameEnergies(const std::vector<float>& frame) {
         int N = frame.size();
-        // È·±£NÊÇ2µÄÃİ£¿KissFFTÖ§³ÖÈÎÒâ³¤¶È£¬µ«ÎªÁËĞ§ÂÊ£¬¿ÉÌî³äµ½2µÄÃİ¡£ÕâÀï¼ò»¯Ö±½ÓÊ¹ÓÃÔ­Ê¼³¤¶È¡£
-        // Ó¦ÓÃººÄş´°
+        // ç¡®ä¿Næ˜¯2çš„å¹‚ï¼ŸKissFFTæ”¯æŒä»»æ„é•¿åº¦ï¼Œä½†ä¸ºäº†æ•ˆç‡ï¼Œå¯å¡«å……åˆ°2çš„å¹‚ã€‚è¿™é‡Œç®€åŒ–ç›´æ¥ä½¿ç”¨åŸå§‹é•¿åº¦ã€‚
+        // åº”ç”¨æ±‰å®çª—
         std::vector<float> windowed(N);
         for (int i = 0; i < N; ++i) {
             double hanning = 0.5 * (1 - cos(2 * M_PI * i / (N - 1)));
             windowed[i] = frame[i] * hanning;
         }
 
-        // Ö´ĞĞFFT
+        // æ‰§è¡ŒFFT
         kiss_fft_cfg cfg = kiss_fft_alloc(N, 0, nullptr, nullptr);
         std::vector<kiss_fft_cpx> in(N), out(N);
         for (int i = 0; i < N; ++i) {
@@ -167,7 +167,7 @@ public:
         kiss_fft(cfg, in.data(), out.data());
         kiss_fft_free(cfg);
 
-        // ¼ÆËã·ù¶ÈÆ×£¨Ö»È¡ÕıÆµÂÊ£¬0~N/2£©
+        // è®¡ç®—å¹…åº¦è°±ï¼ˆåªå–æ­£é¢‘ç‡ï¼Œ0~N/2ï¼‰
         int nfft = N / 2 + 1;
         std::vector<double> magnitude(nfft);
         for (int i = 0; i < nfft; ++i) {
@@ -176,13 +176,13 @@ public:
             magnitude[i] = sqrt(real * real + imag * imag);
         }
 
-        // ½«·ù¶ÈÆ×Ó³Éäµ½Æµ¶ÎÄÜÁ¿
+        // å°†å¹…åº¦è°±æ˜ å°„åˆ°é¢‘æ®µèƒ½é‡
         std::vector<double> energies(config_.width, 0.0);
-        double freqPerBin = sampleRate_ / (double)N; // Ã¿¸öFFT bin¶ÔÓ¦µÄÆµÂÊ¿í¶È
+        double freqPerBin = sampleRate_ / (double)N; // æ¯ä¸ªFFT binå¯¹åº”çš„é¢‘ç‡å®½åº¦
 
         for (int bin = 0; bin < nfft; ++bin) {
             double freq = bin * freqPerBin;
-            // ÕÒµ½¸ÃbinÊôÓÚÄÄ¸öÆµ¶Î
+            // æ‰¾åˆ°è¯¥binå±äºå“ªä¸ªé¢‘æ®µ
             for (int b = 0; b < config_.width; ++b) {
                 if (freq >= bands_[b] && freq < bands_[b + 1]) {
                     energies[b] += magnitude[bin];
@@ -200,13 +200,13 @@ private:
 };
 
 // ----------------------------------------------
-// ¹éÒ»»¯Æ÷£¬½«ÄÜÁ¿×ª»»Îª0~10¸ß¶È
+// å½’ä¸€åŒ–å™¨ï¼Œå°†èƒ½é‡è½¬æ¢ä¸º0~10é«˜åº¦
 // ----------------------------------------------
 class Normalizer {
 public:
     Normalizer(int width) : width_(width) {}
 
-    // ´«ÈëËùÓĞÖ¡µÄÆµ¶ÎÄÜÁ¿£¨vector<vector<double>>£©£¬¼ÆËãÃ¿¸öÆµ¶ÎµÄ×î´óÖµ£¬²¢¹éÒ»»¯µ½0~10
+    // ä¼ å…¥æ‰€æœ‰å¸§çš„é¢‘æ®µèƒ½é‡ï¼ˆvector<vector<double>>ï¼‰ï¼Œè®¡ç®—æ¯ä¸ªé¢‘æ®µçš„æœ€å¤§å€¼ï¼Œå¹¶å½’ä¸€åŒ–åˆ°0~10
     void computeGlobalMax(const std::vector<std::vector<double>>& allEnergies) {
         maxPerBand_.assign(width_, 0.0);
         for (const auto& frame : allEnergies) {
@@ -216,13 +216,13 @@ public:
                 }
             }
         }
-        // ±ÜÃâ³ıÁã
+        // é¿å…é™¤é›¶
         for (int i = 0; i < width_; ++i) {
             if (maxPerBand_[i] == 0) maxPerBand_[i] = 1e-6;
         }
     }
 
-    // ½«Ò»Ö¡ÄÜÁ¿¹éÒ»»¯ÎªÕûÊı¸ß¶È
+    // å°†ä¸€å¸§èƒ½é‡å½’ä¸€åŒ–ä¸ºæ•´æ•°é«˜åº¦
     std::vector<int> normalizeFrame(const std::vector<double>& energies) {
         std::vector<int> heights(width_);
         for (int i = 0; i < width_; ++i) {
@@ -240,25 +240,25 @@ private:
 };
 
 // ----------------------------------------------
-// MinecraftÊı¾İ°üÉú³ÉÆ÷
+// Minecraftæ•°æ®åŒ…ç”Ÿæˆå™¨
 // ----------------------------------------------
 class MinecraftDataPackGenerator {
 public:
     MinecraftDataPackGenerator(const VisualizationConfig& config)
         : config_(config) {}
 
-    // Éú³ÉÊı¾İ°üµ½Ö¸¶¨Ä¿Â¼
+    // ç”Ÿæˆæ•°æ®åŒ…åˆ°æŒ‡å®šç›®å½•
     bool generate(const std::string& outputDir,
         const std::vector<std::vector<int>>& frameHeights) {
-        // ´´½¨Êı¾İ°üÄ¿Â¼½á¹¹
+        // åˆ›å»ºæ•°æ®åŒ…ç›®å½•ç»“æ„
         fs::path packDir = outputDir;
         fs::path functionsDir = packDir / "data" / "music_vis" / "function";
         fs::create_directories(functionsDir);
 
-        // ´´½¨pack.mcmeta
+        // åˆ›å»ºpack.mcmeta
         std::ofstream meta(packDir / "pack.mcmeta");
         if (!meta) {
-            std::cerr << "ÎŞ·¨´´½¨pack.mcmeta" << std::endl;
+            std::cerr << "æ— æ³•åˆ›å»ºpack.mcmeta" << std::endl;
             return false;
         }
         meta << "{\n"
@@ -269,20 +269,20 @@ public:
             "}\n";
         meta.close();
 
-        // Éú³ÉÃ¿¸ötickµÄº¯ÊıÎÄ¼ş
+        // ç”Ÿæˆæ¯ä¸ªtickçš„å‡½æ•°æ–‡ä»¶
         int tickCount = frameHeights.size();
         for (int tick = 0; tick < tickCount; ++tick) {
             std::string funcName = "tick_" + std::to_string(tick) + ".mcfunction";
             
             std::ofstream func(functionsDir / funcName);
             if (!func) {
-                std::cerr << "ÎŞ·¨´´½¨º¯ÊıÎÄ¼ş: " << funcName << std::endl;
+                std::cerr << "æ— æ³•åˆ›å»ºå‡½æ•°æ–‡ä»¶: " << funcName << std::endl;
                 return false;
             }
 
             const auto& heights = frameHeights[tick];
 
-            // ¶ÔÃ¿Ò»ÁĞ£¨Æµ¶Î£©Ã¿Ò»ĞĞ£¨¸ß¶È£©Éú³Ésetblock
+            // å¯¹æ¯ä¸€åˆ—ï¼ˆé¢‘æ®µï¼‰æ¯ä¸€è¡Œï¼ˆé«˜åº¦ï¼‰ç”Ÿæˆsetblock
             for (int x = 0; x < config_.width; ++x) {
                 int height = heights[x];
                 for (int y = 0; y < config_.height; ++y) {
@@ -300,40 +300,40 @@ public:
                         << " " << block << " replace\n";
                 }
             }
-            std::cout << "\rÒÑÉú³ÉÖ¡Êı£º" << tick;
-            std::cout.flush(); // È·±£Á¢¼´Êä³ö
+            std::cout << "\rå·²ç”Ÿæˆå¸§æ•°ï¼š" << tick;
+            std::cout.flush(); // ç¡®ä¿ç«‹å³è¾“å‡º
             func.close();
         }
 
-        // Éú³ÉÆô¶¯º¯Êı£¬Ê¹ÓÃscheduleÒÀ´Îµ÷ÓÃ¸÷¸ötickº¯Êı
+        // ç”Ÿæˆå¯åŠ¨å‡½æ•°ï¼Œä½¿ç”¨scheduleä¾æ¬¡è°ƒç”¨å„ä¸ªtickå‡½æ•°
         std::ofstream start(functionsDir / "start.mcfunction");
         if (!start) {
-            std::cerr << "ÎŞ·¨´´½¨start.mcfunction" << std::endl;
+            std::cerr << "æ— æ³•åˆ›å»ºstart.mcfunction" << std::endl;
             return false;
         }
 
         for (int tick = 0; tick < tickCount; ++tick) {
-            // Ã¿¸ötickº¯ÊıÖ´ĞĞºó£¬µ÷¶ÈÏÂÒ»¸ötick£¨×îºóÒ»¸ö³ıÍâ£©
+            // æ¯ä¸ªtickå‡½æ•°æ‰§è¡Œåï¼Œè°ƒåº¦ä¸‹ä¸€ä¸ªtickï¼ˆæœ€åä¸€ä¸ªé™¤å¤–ï¼‰
             start << "schedule function music_vis:tick_" << tick << " " << tick << "t\n";
         }
         start.close();
 
-        // Éú³Éstopº¯Êı£¬Ê¹ÓÃscheduleÒÀ´Îµ÷ÓÃ¸÷¸ötickº¯Êı
+        // ç”Ÿæˆstopå‡½æ•°ï¼Œä½¿ç”¨scheduleä¾æ¬¡è°ƒç”¨å„ä¸ªtickå‡½æ•°
         std::ofstream stop(functionsDir / "stop.mcfunction");
         if (!stop) {
-            std::cerr << "ÎŞ·¨´´½¨stop.mcfunction" << std::endl;
+            std::cerr << "æ— æ³•åˆ›å»ºstop.mcfunction" << std::endl;
             return false;
         }
 
         for (int tick = 0; tick < tickCount; ++tick) {
-            // Ã¿¸ötickº¯ÊıÖ´ĞĞºó£¬µ÷¶ÈÏÂÒ»¸ötick£¨×îºóÒ»¸ö³ıÍâ£©
+            // æ¯ä¸ªtickå‡½æ•°æ‰§è¡Œåï¼Œè°ƒåº¦ä¸‹ä¸€ä¸ªtickï¼ˆæœ€åä¸€ä¸ªé™¤å¤–ï¼‰
             stop << "schedule clear music_vis:tick_" << tick << "\n";
         }
         start.close();
 
 
-        // Ò²¿ÉÒÔÉú³ÉÒ»¸öÍ£Ö¹º¯Êı£¨¿ÉÑ¡£©
-        std::cout << "Êı¾İ°üÉú³É³É¹¦£¬°üº¬ " << tickCount << " ¸ötick¡£\n";
+        // ä¹Ÿå¯ä»¥ç”Ÿæˆä¸€ä¸ªåœæ­¢å‡½æ•°ï¼ˆå¯é€‰ï¼‰
+        std::cout << "æ•°æ®åŒ…ç”ŸæˆæˆåŠŸï¼ŒåŒ…å« " << tickCount << " ä¸ªtickã€‚\n";
         return true;
     }
 
@@ -342,75 +342,65 @@ private:
 };
 
 // ----------------------------------------------
-// Ö÷³ÌĞò
+// ä¸»ç¨‹åº
 // ----------------------------------------------
 int main(int argc, char* argv[]) {
     
     
-    std::cout << "³ÌĞòÆô¶¯" << std::endl;
+    std::cout << "ç¨‹åºå¯åŠ¨" << std::endl;
     
-    /*
-    std::cout << "²ÎÊı¸öÊı: " << argc << std::endl;
-    for (int i = 0; i < argc; ++i) {
-        std::cout << "argv[" << i << "] = " << argv[i] << std::endl;
-    }
-    std::cout.flush(); // È·±£Á¢¼´Êä³ö
-    */
 
     if (argc < 6) {
-        std::cerr << "ÓÃ·¨: " << argv[0] << " <input.mp3> <output_datapack_dir> <start_x> <start_y> <start_z>\n";
+        std::cerr << "ç”¨æ³•: " << argv[0] << " <input.mp3> <output_datapack_dir> <start_x> <start_y> <start_z>\n";
         return 1;
     }
-    std::cout << "³ÌĞò¿ªÊ¼ÔËĞĞ" << std::endl;
+    std::cout << "ç¨‹åºå¼€å§‹è¿è¡Œ" << std::endl;
     std::string inputFile = argv[1];
     std::string outputDir = argv[2];
     
-    //std::string inputFile = "D:\\minecraft\\.minecraft\\versions\\1.21.8\\saves\\mv\\datapacks\\mu\\1.mp3";
-    //std::string outputDir = "D:\\minecraft\\.minecraft\\versions\\1.21.8\\saves\\mv\\datapacks\\mu";
+    std::cout << "è¾“å…¥æ–‡ä»¶: " << inputFile << std::endl;
+    std::cout << "è¾“å‡ºç›®å½•: " << outputDir << std::endl;
 
-    std::cout << "ÊäÈëÎÄ¼ş: " << inputFile << std::endl;
-    std::cout << "Êä³öÄ¿Â¼: " << outputDir << std::endl;
-
-    // ÅäÖÃ£¨¿ÉÍ¨¹ıÃüÁîĞĞ²ÎÊıĞŞ¸Ä£¬ÕâÀïÓ²±àÂëÊ¾Àı£©
+    // é…ç½®ï¼ˆå¯é€šè¿‡å‘½ä»¤è¡Œå‚æ•°ä¿®æ”¹ï¼Œè¿™é‡Œç¡¬ç¼–ç ç¤ºä¾‹ï¼‰
 
     VisualizationConfig config;
     config.baseX = (int)argv[3];
     config.baseY = (int)argv[4];
     config.baseZ = (int)argv[5];
-    std::cout << "ÅäÖÃÉèÖÃÍê±Ï" << std::endl;
+    std::cout << "é…ç½®è®¾ç½®å®Œæ¯•" << std::endl;
     
     
-    // 1. ½âÂëMP3
+    // 1. è§£ç MP3
     AudioDecoder decoder;
     std::vector<float> pcm;
     int sampleRate;
     if (!decoder.load(inputFile, pcm, sampleRate)) {
         return 1;
     }
-    std::cout << "²ÉÑùÂÊ: " << sampleRate << " Hz, ×ÜÑù±¾Êı: " << pcm.size() << std::endl;
+    std::cout << "é‡‡æ ·ç‡: " << sampleRate << " Hz, æ€»æ ·æœ¬æ•°: " << pcm.size() << std::endl;
     
-    // 2. ·ÖÖ¡
+    // 2. åˆ†å¸§
     int frameSize = config.frameSamples(sampleRate);
     int totalFrames = pcm.size() / frameSize;
     if (totalFrames == 0) {
-        std::cerr << "ÒôÆµÌ«¶Ì£¬ÎŞ·¨·ÖÖ¡" << std::endl;
+        std::cerr << "éŸ³é¢‘å¤ªçŸ­ï¼Œæ— æ³•åˆ†å¸§" << std::endl;
         return 1;
     }
-    std::cout << "Ö¡´óĞ¡: " << frameSize << " Ñù±¾, ×ÜÖ¡Êı: " << totalFrames << std::endl;
+    std::cout << "å¸§å¤§å°: " << frameSize << " æ ·æœ¬, æ€»å¸§æ•°: " << totalFrames << std::endl;
 
-    // 3. ÆµÂÊ·ÖÎö
+    // 3. é¢‘ç‡åˆ†æ
     FrequencyAnalyzer analyzer(sampleRate, config);
     std::vector<std::vector<double>> allEnergies(totalFrames);
     for (int f = 0; f < totalFrames; ++f) {
         int start = f * frameSize;
         int end = (std::min)(start + frameSize, static_cast<int>(pcm.size()));
         std::vector<float> frame(pcm.begin() + start, pcm.begin() + end);
-        // Èç¹ûÖ¡³¤²»×ã£¬²¹Áã£¨×îºóÒ»Ö¡¿ÉÄÜ²»×ã£¬¼òµ¥²¹Áã£©
+        // å¦‚æœå¸§é•¿ä¸è¶³ï¼Œè¡¥é›¶ï¼ˆæœ€åä¸€å¸§å¯èƒ½ä¸è¶³ï¼Œç®€å•è¡¥é›¶ï¼‰
         frame.resize(frameSize, 0.0f);
         allEnergies[f] = analyzer.computeFrameEnergies(frame);
     }
 
-    // 4. ¹éÒ»»¯
+    // 4. å½’ä¸€åŒ–
     Normalizer normalizer(config.width);
     normalizer.computeGlobalMax(allEnergies);
     std::vector<std::vector<int>> frameHeights(totalFrames);
@@ -418,11 +408,12 @@ int main(int argc, char* argv[]) {
         frameHeights[f] = normalizer.normalizeFrame(allEnergies[f]);
     }
 
-    // 5. Éú³ÉÊı¾İ°ü
+    // 5. ç”Ÿæˆæ•°æ®åŒ…
     MinecraftDataPackGenerator generator(config);
     if (!generator.generate(outputDir, frameHeights)) {
         return 1;
     }
 
     std::cin.get();
+
 }
